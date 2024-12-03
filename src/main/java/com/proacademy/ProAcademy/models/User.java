@@ -1,17 +1,13 @@
 package com.proacademy.proacademy.models;
+
 import java.time.LocalDate;
 import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = User.TABLE_NAME)
@@ -19,62 +15,66 @@ public class User {
     public static final String TABLE_NAME = "user";
 
     public interface CreateUser {}
-
     public interface UpdateUser {}
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "id", unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, updatable = false)
     private UUID id;
 
-    @Column (name = "fullName", length = 100, nullable = false)
+    @Column(name = "fullName", length = 100, nullable = false)
+    @NotNull(groups = {CreateUser.class, UpdateUser.class})
+    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
+    @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String fullName;
 
-    @Column (name = "birthday", nullable = false)
+    @Column(name = "birthday", nullable = false)
+    @NotNull(groups = CreateUser.class)
     private LocalDate birthday;
 
-    @Column (name = "email", length = 100, nullable = false, unique = true)
-    @NotNull (groups = CreateUser.class)
-    @NotEmpty (groups = CreateUser.class)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
+    @NotNull(groups = CreateUser.class)
+    @NotEmpty(groups = CreateUser.class)
+    @Email(groups = {CreateUser.class, UpdateUser.class})
     private String email;
 
-    @JsonProperty (access = Access.WRITE_ONLY)
-    @Column (name = "password", length = 16, nullable = false)
-    @NotNull (groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty (groups = {CreateUser.class, UpdateUser.class})
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @Column(name = "password", length = 16, nullable = false)
+    @NotNull(groups = {CreateUser.class, UpdateUser.class})
+    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
     @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 16)
     private String password;
 
-    @Column (name = "course", length = 100, nullable = false)
+    @Column(name = "course", length = 100, nullable = false)
+    @NotNull(groups = {CreateUser.class, UpdateUser.class})
+    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
+    @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String course;
 
-    @Column (name = "university", length = 100, nullable = false)
+    @Column(name = "university", length = 100, nullable = false)
+    @NotNull(groups = {CreateUser.class, UpdateUser.class})
+    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
+    @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String university;
 
-    @Column (name = "criationDate", nullable = false)
-    private LocalDate criationDate; 
+    @Column(name = "creationDate", nullable = false, updatable = false)
+    private LocalDate creationDate;
 
-    // private List<Project> projects = new ArrayList<Project>();
-
-    public User(){
-    
+    public User() {
+        // Default constructor
     }
 
     public User(String fullName, LocalDate birthday, String email, String password, String course, String university) {
-        this.id = UUID.randomUUID();
         this.fullName = fullName;
         this.birthday = birthday;
         this.email = email;
         this.password = password;
         this.course = course;
         this.university = university;
-        this.criationDate = LocalDate.now();
+        this.creationDate = LocalDate.now();
     }
 
-    public static String getTableName() {
-        return TABLE_NAME;
-    }
-
+    // Getters and setters
     public UUID getId() {
         return id;
     }
@@ -133,62 +133,14 @@ public class User {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((fullName == null) ? 0 : fullName.hashCode());
-        result = prime * result + ((birthday == null) ? 0 : birthday.hashCode());
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((password == null) ? 0 : password.hashCode());
-        result = prime * result + ((course == null) ? 0 : course.hashCode());
-        result = prime * result + ((university == null) ? 0 : university.hashCode());
-        return result;
+        return id != null ? id.hashCode() : super.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
         User other = (User) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (fullName == null) {
-            if (other.fullName != null)
-                return false;
-        } else if (!fullName.equals(other.fullName))
-            return false;
-        if (birthday == null) {
-            if (other.birthday != null)
-                return false;
-        } else if (!birthday.equals(other.birthday))
-            return false;
-        if (email == null) {
-            if (other.email != null)
-                return false;
-        } else if (!email.equals(other.email))
-            return false;
-        if (password == null) {
-            if (other.password != null)
-                return false;
-        } else if (!password.equals(other.password))
-            return false;
-        if (course == null) {
-            if (other.course != null)
-                return false;
-        } else if (!course.equals(other.course))
-            return false;
-        if (university == null) {
-            if (other.university != null)
-                return false;
-        } else if (!university.equals(other.university))
-            return false;
-        return true;
+        return id != null && id.equals(other.id);
     }
 }
