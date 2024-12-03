@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.proacademy</groupId>
-	<artifactId>ProAcademy</artifactId>
+	<artifactId>proacademy</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ProAcademy</name>
 	<description>Aplicativo para gerenciamento de projetos estudantis.</description>
@@ -40,6 +40,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
