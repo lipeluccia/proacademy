@@ -1,7 +1,8 @@
 package com.proacademy.proacademy.models;
 
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -18,9 +19,9 @@ public class User {
     public interface UpdateUser {}
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, updatable = false)
-    private UUID id;
+    private Long id;
 
     @Column(name = "fullName", length = 100, nullable = false)
     @NotNull(groups = {CreateUser.class, UpdateUser.class})
@@ -29,6 +30,7 @@ public class User {
     private String fullName;
 
     @Column(name = "birthday", nullable = false)
+    @NotEmpty
     @NotNull(groups = CreateUser.class)
     private LocalDate birthday;
 
@@ -57,14 +59,20 @@ public class User {
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String university;
 
+    @OneToMany(mappedBy = "user")
+    private List<Project> projects = new ArrayList<Project>();
+
     @Column(name = "creationDate", nullable = false, updatable = false)
+    @NotNull
+    @NotEmpty
     private LocalDate creationDate;
 
     public User() {
-        // Default constructor
+
     }
 
-    public User(String fullName, LocalDate birthday, String email, String password, String course, String university) {
+    public User(Long id, String fullName, LocalDate birthday, String email, String password, String course, String university) {
+        this.id = id;
         this.fullName = fullName;
         this.birthday = birthday;
         this.email = email;
@@ -75,11 +83,11 @@ public class User {
     }
 
     // Getters and setters
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -129,6 +137,14 @@ public class User {
 
     public void setUniversity(String university) {
         this.university = university;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     @Override
