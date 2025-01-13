@@ -1,18 +1,23 @@
 package com.proacademy.proacademy.models;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = Project.TABLE_NAME)
-public class Project {
-    public static final String TABLE_NAME = "project";
+@Table(name = Task.TABLE_NAME)
+public class Task {
+    public static final String TABLE_NAME = "task";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +25,9 @@ public class Project {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    @JoinColumn(name = "project_id", nullable = false, updatable = false)
     @NotNull
-    private User user;
+    private Project project;
 
     @Column(name = "title", length = 60, nullable = false)
     @NotNull
@@ -40,25 +45,22 @@ public class Project {
     @NotNull
     private LocalDate finishDate;
 
-    @Column(name = "status_Active", nullable = false)
+    @Column(name = "status_active", nullable = false)
     private boolean statusActive;
 
     @Column(name = "creation_date", nullable = false)
     private LocalDate creationDate;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Task> tasks = new ArrayList<>();
-
-   // Construtor padrão
-    public Project() {
-    this.statusActive = true;
-    this.creationDate = LocalDate.now();
-}
+    // Construtor padrão
+    public Task() {
+        this.statusActive = true;
+        this.creationDate = LocalDate.now();
+    }
 
     // Construtor completo
-    public Project(Long id, User user, String title, String description, LocalDate initialDate, LocalDate finishDate, LocalDate creationDate) {
+    public Task(Long id, Project project, String title, String description, LocalDate initialDate, LocalDate finishDate, LocalDate creationDate) {
         this.id = id;
-        this.user = user;
+        this.project = project;
         this.title = title;
         this.description = description;
         this.initialDate = initialDate;
@@ -68,6 +70,10 @@ public class Project {
     }
 
     // Getters e Setters
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
     public Long getId() {
         return id;
     }
@@ -76,12 +82,12 @@ public class Project {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Project getProject() {
+        return project;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public String getTitle() {
@@ -131,19 +137,10 @@ public class Project {
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }
-
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
-
     // hashCode
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, title, description, initialDate, finishDate, statusActive, creationDate);
+        return Objects.hash(id, project, title, description, initialDate, finishDate, statusActive, creationDate);
     }
 
     // equals
@@ -155,10 +152,10 @@ public class Project {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Project other = (Project) obj;
+        Task other = (Task) obj;
         return statusActive == other.statusActive &&
                Objects.equals(id, other.id) &&
-               Objects.equals(user, other.user) &&
+               Objects.equals(project, other.project) &&
                Objects.equals(title, other.title) &&
                Objects.equals(description, other.description) &&
                Objects.equals(initialDate, other.initialDate) &&

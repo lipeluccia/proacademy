@@ -23,14 +23,13 @@ public class User {
     @Column(name = "id", unique = true, updatable = false)
     private Long id;
 
-    @Column(name = "fullName", length = 100, nullable = false)
+    @Column(name = "full_name", length = 100, nullable = false)
     @NotNull(groups = {CreateUser.class, UpdateUser.class})
     @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String fullName;
 
     @Column(name = "birthday", nullable = false)
-    @NotEmpty
     @NotNull(groups = CreateUser.class)
     private LocalDate birthday;
 
@@ -59,16 +58,15 @@ public class User {
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String university;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects = new ArrayList<Project>();
 
     @Column(name = "creationDate", nullable = false, updatable = false)
     @NotNull
-    @NotEmpty
     private LocalDate creationDate;
 
     public User() {
-
+        this.creationDate = LocalDate.now();
     }
 
     public User(Long id, String fullName, LocalDate birthday, String email, String password, String course, String university) {
