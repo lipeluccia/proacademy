@@ -3,20 +3,20 @@ package com.proacademy.proacademy.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.models.User;
 import com.proacademy.proacademy.repositories.ProjectRepository;
 
-@Repository // Declara que esta classe é um componente do Spring, responsável por operações de persistência relacionadas ao Project.
+@Service // // Declara que esta classe é um serviço do Spring, permitindo sua injeção e gerenciamento pelo framework.
 public class ProjectService {
 
     @Autowired // Injeta automaticamente a dependência do repositório ProjectRepository.
     private ProjectRepository projectRepository;
 
-    // Declara a dependência do serviço UserService, usada para operações relacionadas ao usuário.
+    @Autowired  // Declara a dependência do serviço UserService, usada para operações relacionadas ao usuário.
     private UserService userService;
 
     /**
