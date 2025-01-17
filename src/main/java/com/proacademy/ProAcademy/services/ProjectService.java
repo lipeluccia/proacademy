@@ -1,5 +1,6 @@
 package com.proacademy.proacademy.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ public class ProjectService {
         return project.orElseThrow(() -> new RuntimeException(
         "Projeto não encontrado! Id: " + id + ", Tipo: " + Project.class.getName()
         ));
+    }
+
+    public List<Project> findByAllByUserId(Long userId) {
+        List<Project> projects = this.projectRepository.findByUser_Id(userId);
+        return projects;
     }
 
     /**

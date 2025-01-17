@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -132,6 +134,7 @@ public class Project {
         this.creationDate = creationDate;
     }
 
+    @JsonIgnore
     public List<Task> getTasks() {
         return tasks;
     }
