@@ -1,5 +1,6 @@
 package com.proacademy.proacademy.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,11 @@ public class TaskService {
         ));
     }
 
+     public List<Task> findByAllByProjectId(Long projectId) {
+        List<Task> tasks = this.taskRepository.findByProject_Id(projectId);
+        return tasks;
+    }
+
     /**
      * Cria uma nova tarefa e associa a um projeto existente.
      * @param obj Objeto Task contendo as informações da nova tarefa.
@@ -39,7 +45,7 @@ public class TaskService {
      * A anotação @Transactional garante que a operação será atômica.
      */
     @Transactional
-    public Task create(Task obj) {
+    public Task createTask(Task obj) {
         Project project = this.projectService.findById(obj.getProject().getId()); // Busca o projeto associado à tarefa.
         obj.setId(null); // Garante que o ID será gerado automaticamente ao salvar.
         obj.setProject(project); // Associa o projeto à tarefa.
@@ -54,7 +60,7 @@ public class TaskService {
      * A anotação @Transactional garante que a operação será realizada como uma transação.
      */
     @Transactional
-    public Task updateProject(Project obj) {
+    public Task updateTask(Task obj) {
         Task newObj = findById(obj.getId()); // Busca o projeto pelo ID.
         newObj.setTitle(obj.getTitle() != null ? obj.getTitle() : newObj.getTitle()); // Atualiza o título do projeto.
         newObj.setDescription(obj.getDescription() != null ? obj.getDescription() : newObj.getDescription()); // Atualiza a descrição projeto.
@@ -69,7 +75,7 @@ public class TaskService {
      * @param id ID da tarefa a ser excluída.
      * @throws RuntimeException Caso a tarefa tenha entidades relacionadas que impeçam a exclusão.
      */
-    public void delete(Long id) {
+    public void deleteTask(Long id) {
         findById(id); // Verifica se a tarefa existe antes de tentar excluir.
         try {
             this.taskRepository.deleteById(id); // Tenta excluir a tarefa pelo ID.
