@@ -29,28 +29,32 @@ public class UserService {
     }
 
     /**
-     * Cria um novo usuário e associa seus projetos.
+     * Cria um novo usuário.
      * @param obj Objeto User contendo as informações do novo usuário.
      * @return Retorna o usuário salvo no banco de dados.
      * A anotação @Transactional garante que a operação será atômica.
      */
     @Transactional
-    public User create(User obj) {
+    public User createUser(User obj) {
         obj.setId(null);    // Garante que o ID será gerado automaticamente ao salvar.
         obj = this.userRepository.save(obj);    // Salva o usuário no banco.
         return obj;
     }
 
     /**
-     * Atualiza a senha de um usuário existente.
+     * Atualiza um usuário existente.
      * @param obj Objeto User contendo o ID e a nova senha.
      * @return Retorna o usuário atualizado.
      * A anotação @Transactional garante que a operação será realizada como uma transação.
      */
     @Transactional
-    public User updatePassword(User obj){
+    public User updateUser(User obj){
         User newObj = findById(obj.getId());    // Busca o usuário pelo ID
-        newObj.setPassword(obj.getPassword());  // Atualiza a senha.
+        newObj.setFullName(obj.getFullName() != null ? obj.getFullName() : newObj.getFullName());
+        newObj.setBirthday(obj.getBirthday() != null ? obj.getBirthday() : newObj.getBirthday());
+        newObj.setPassword(obj.getPassword() != null ? obj.getPassword() : newObj.getPassword());
+        newObj.setCourse(obj.getCourse() != null ? obj.getCourse() : newObj.getCourse());
+        newObj.setUniversity(obj.getUniversity() != null ? obj.getUniversity() : newObj.getUniversity());
         return this.userRepository.save(newObj);    // Salva as alterações no banco.
     }
 
