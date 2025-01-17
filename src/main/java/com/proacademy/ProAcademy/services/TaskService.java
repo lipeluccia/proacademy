@@ -54,9 +54,13 @@ public class TaskService {
      * A anotação @Transactional garante que a operação será realizada como uma transação.
      */
     @Transactional
-    public Task update(Task obj) {
-        Task newObj = findById(obj.getId()); // Busca a tarefa pelo ID.
-        newObj.setTitle(obj.getTitle()); // Atualiza o título da tarefa.
+    public Task updateProject(Project obj) {
+        Task newObj = findById(obj.getId()); // Busca o projeto pelo ID.
+        newObj.setTitle(obj.getTitle() != null ? obj.getTitle() : newObj.getTitle()); // Atualiza o título do projeto.
+        newObj.setDescription(obj.getDescription() != null ? obj.getDescription() : newObj.getDescription()); // Atualiza a descrição projeto.
+        newObj.setInitialDate(obj.getInitialDate() != null ? obj.getInitialDate() : newObj.getInitialDate()); // Atualiza a data inicial do projeto.
+        newObj.setFinishDate(obj.getFinishDate() != null ? obj.getFinishDate() : newObj.getFinishDate()); //Atualiza a data final do projeto 
+        newObj.setStatusActive(obj.isStatusActive()); // Atualiza se o projeto está concluido ou não.
         return this.taskRepository.save(newObj); // Salva as alterações no banco de dados.
     }
 
