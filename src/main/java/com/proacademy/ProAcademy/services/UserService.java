@@ -63,7 +63,7 @@ public class UserService {
      * @param id ID do usuário a ser excluído.
      * @throws RuntimeException Caso o usuário tenha entidades relacionadas que impedem a exclusão.
      */
-    public void delete(Long id){
+    public void deleteUser(Long id){
         findById(id);   // Verifica se o usuário existe antes de tentar excluir.
         try {
             this.userRepository.deleteById(id);     // Tenta excluir o usuário pelo ID.

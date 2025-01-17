@@ -39,7 +39,7 @@ public class ProjectService {
      * A anotação @Transactional garante que a operação será atômica.
      */
     @Transactional
-    public Project create(Project obj) {
+    public Project createProject(Project obj) {
         User user = this.userService.findById(obj.getUser().getId()); // Busca o usuário associado ao projeto.
         obj.setId(null); // Garante que o ID será gerado automaticamente ao salvar.
         obj.setUser(user); // Associa o usuário ao projeto.
@@ -69,7 +69,7 @@ public class ProjectService {
      * @param id ID do projeto a ser excluído.
      * @throws RuntimeException Caso o projeto tenha entidades relacionadas que impeçam a exclusão.
      */
-    public void delete(Long id) {
+    public void deleteProject(Long id) {
         findById(id); // Verifica se o projeto existe antes de tentar excluir.
         try {
             this.projectRepository.deleteById(id); // Tenta excluir o projeto pelo ID.
