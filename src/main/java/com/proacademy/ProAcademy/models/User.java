@@ -25,8 +25,8 @@ public class User {
     private Long id;
 
     @Column(name = "full_name", length = 100, nullable = false)
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
+    @NotNull(groups = {CreateUser.class})
+    @NotEmpty(groups = {CreateUser.class})
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String fullName;
 
@@ -42,20 +42,20 @@ public class User {
 
     @JsonProperty(access = Access.WRITE_ONLY)
     @Column(name = "password", length = 16, nullable = false)
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
-    @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 16)
+    @NotNull(groups = {CreateUser.class})
+    @NotEmpty(groups = {CreateUser.class})
+    @Size(groups = {CreateUser.class, UpdateUser.class}, min = 6, max = 16)
     private String password;
 
     @Column(name = "course", length = 100, nullable = false)
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
+    @NotNull(groups = {CreateUser.class})
+    @NotEmpty(groups = {CreateUser.class})
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String course;
 
     @Column(name = "university", length = 100, nullable = false)
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
+    @NotNull(groups = {CreateUser.class})
+    @NotEmpty(groups = {CreateUser.class})
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String university;
 

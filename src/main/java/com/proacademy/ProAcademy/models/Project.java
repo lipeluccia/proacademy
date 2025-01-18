@@ -58,7 +58,7 @@ public class Project {
 }
 
     // Construtor completo
-    public Project(Long id, User user, String title, String description, LocalDate initialDate, LocalDate finishDate, LocalDate creationDate) {
+    public Project(Long id, User user, String title, String description, LocalDate initialDate, LocalDate finishDate) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -66,7 +66,7 @@ public class Project {
         this.initialDate = initialDate;
         this.finishDate = finishDate;
         this.statusActive = true;
-        this.creationDate = creationDate != null ? creationDate : LocalDate.now();
+        this.creationDate = LocalDate.now();
     }
 
     // Getters e Setters

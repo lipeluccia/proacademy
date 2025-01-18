@@ -20,12 +20,6 @@ public class ProjectService {
     @Autowired  // Declara a dependência do serviço UserService, usada para operações relacionadas ao usuário.
     private UserService userService;
 
-    /**
-     * Busca um projeto pelo ID.
-     * @param id ID do projeto a ser buscado.
-     * @return Retorna o objeto Project encontrado.
-     * @throws RuntimeException Caso o projeto não seja encontrado.
-     */
     public Project findById(Long id) {
         Optional<Project> project = this.projectRepository.findById(id); // Busca o projeto no repositório.
         return project.orElseThrow(() -> new RuntimeException(
@@ -38,12 +32,6 @@ public class ProjectService {
         return projects;
     }
 
-    /**
-     * Cria um novo projeto e associa a um usuário existente.
-     * @param obj Objeto Project contendo as informações do projeto a ser criado.
-     * @return Retorna o projeto salvo no banco de dados.
-     * A anotação @Transactional garante que a operação será atômica.
-     */
     @Transactional
     public Project createProject(Project obj) {
         User user = this.userService.findById(obj.getUser().getId()); // Busca o usuário associado ao projeto.
@@ -53,12 +41,6 @@ public class ProjectService {
         return obj; // Retorna o projeto persistido.
     }
 
-    /**
-     * Atualiza os dados de um projeto existente.
-     * @param obj Objeto Project contendo o ID e os novos dados.
-     * @return Retorna o projeto atualizado.
-     * A anotação @Transactional garante que a operação será realizada como uma transação.
-     */
     @Transactional
     public Project updateProject(Project obj) {
         Project newObj = findById(obj.getId()); // Busca o projeto pelo ID.
@@ -70,11 +52,6 @@ public class ProjectService {
         return this.projectRepository.save(newObj); // Salva as alterações no banco de dados.
     }
 
-    /**
-     * Exclui um projeto pelo ID.
-     * @param id ID do projeto a ser excluído.
-     * @throws RuntimeException Caso o projeto tenha entidades relacionadas que impeçam a exclusão.
-     */
     public void deleteProject(Long id) {
         findById(id); // Verifica se o projeto existe antes de tentar excluir.
         try {
