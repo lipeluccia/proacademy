@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.services.ProjectService;
+import com.proacademy.proacademy.services.UserService;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +30,9 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/{id}")
     public ResponseEntity<Project> findById(@PathVariable Long id) {
         Project obj = this.projectService.findById(id); 
@@ -37,6 +41,7 @@ public class ProjectController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Project>> findAllByUserId(@PathVariable Long userId){
+        this.userService.findById(userId);
         List<Project> objs = this.projectService.findByAllByUserId(userId);
         return ResponseEntity.ok().body(objs);
     }

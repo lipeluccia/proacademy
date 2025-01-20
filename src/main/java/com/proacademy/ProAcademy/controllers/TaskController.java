@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.proacademy.proacademy.models.Task;
+import com.proacademy.proacademy.services.ProjectService;
 import com.proacademy.proacademy.services.TaskService;
 
 import jakarta.validation.Valid;
@@ -29,6 +30,9 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private ProjectService projectService;
+
     @GetMapping("/{id}")
     public ResponseEntity<Task> findById(@PathVariable Long id) {
         Task obj = this.taskService.findById(id); 
@@ -37,6 +41,7 @@ public class TaskController {
 
     @GetMapping("/project/{projectId}")
     public ResponseEntity<List<Task>> findAllByUserId(@PathVariable Long projectId){
+        this.projectService.findById(projectId);
         List<Task> objs = this.taskService.findByAllByProjectId(projectId);
         return ResponseEntity.ok().body(objs);
     }
