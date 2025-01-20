@@ -19,30 +19,33 @@ import jakarta.validation.constraints.Size;
 public class Task {
     public static final String TABLE_NAME = "task";
 
+    public interface CreateTask {}
+    public interface UpdateTask {}
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, updatable = false)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column (name = "id", unique = true, updatable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false, updatable = false)
-    @NotNull
+    @JoinColumn (name = "project_id", nullable = false, updatable = false)
+    @NotNull (groups = CreateTask.class)
     private Project project;
 
-    @Column(name = "title", length = 60, nullable = false)
-    @NotNull
+    @Column (name = "title", length = 60, nullable = false)
+    @NotNull (groups = CreateTask.class)
     private String title;
 
-    @Column(name = "description", length = 255)
-    @Size(min = 1, max = 255)
+    @Column (name = "description", length = 255)
+    @Size (min = 1, max = 255)
     private String description;
 
-    @Column(name = "initial_date", nullable = false)
-    @NotNull
+    @Column (name = "initial_date", nullable = false)
+    @NotNull (groups = CreateTask.class)
     private LocalDate initialDate;
 
     @Column(name = "finish_date", nullable = false)
-    @NotNull
+    @NotNull (groups = CreateTask.class)
     private LocalDate finishDate;
 
     @Column(name = "status_active", nullable = false)

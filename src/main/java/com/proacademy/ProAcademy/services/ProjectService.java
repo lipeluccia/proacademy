@@ -6,10 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.proacademy.proacademy.models.Project;
+import com.proacademy.proacademy.models.Project.CreateProject;
 import com.proacademy.proacademy.models.User;
 import com.proacademy.proacademy.repositories.ProjectRepository;
+
+import jakarta.validation.Valid;
 
 @Service // // Declara que esta classe é um serviço do Spring, permitindo sua injeção e gerenciamento pelo framework.
 public class ProjectService {
@@ -33,7 +37,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project createProject(Project obj) {
+    public Project createProject(@Valid @Validated(CreateProject.class) Project obj) {
         User user = this.userService.findById(obj.getUser().getId()); // Busca o usuário associado ao projeto.
         obj.setId(null); // Garante que o ID será gerado automaticamente ao salvar.
         obj.setUser(user); // Associa o usuário ao projeto.
@@ -44,14 +48,18 @@ public class ProjectService {
     @Transactional
     public Project updateProject(Project obj) {
         Project newObj = findById(obj.getId()); // Busca o projeto pelo ID.
-        newObj.setTitle(obj.getTitle() != null ? obj.getTitle() : newObj.getTitle()); // Atualiza o título do projeto.
-        newObj.setDescription(obj.getDescription() != null ? obj.getDescription() : newObj.getDescription()); // Atualiza a descrição projeto.
-        newObj.setInitialDate(obj.getInitialDate() != null ? obj.getInitialDate() : newObj.getInitialDate()); // Atualiza a data inicial do projeto.
-        newObj.setFinishDate(obj.getFinishDate() != null ? obj.getFinishDate() : newObj.getFinishDate()); //Atualiza a data final do projeto 
-        newObj.setStatusActive(obj.isStatusActive()); // Atualiza se o projeto está concluido ou não.
+        if (obj.getTitle() != null) {
+            newObj.setTitle(obj.getTitle()); // Atualiza o título do projeto.
+        }  if (obj.getDescription() != null) {
+            newObj.setDescription(obj.getDescription()); // Atualiza a descrição projeto.
+        } if (obj.getInitialDate()!= null) {
+            newObj.setInitialDate(obj.getInitialDate());  // Atualiza a data inicial do projeto.
+        } if (obj.getFinishDate() != null) {
+            newObj.setFinishDate(obj.getFinishDate());  //Atualiza a data final do projeto 
+        } newObj.setStatusActive(obj.isStatusActive()); // Atualiza se o projeto está concluido ou não.
         return this.projectRepository.save(newObj); // Salva as alterações no banco de dados.
     }
-
+    
     public void deleteProject(Long id) {
         findById(id); // Verifica se o projeto existe antes de tentar excluir.
         try {

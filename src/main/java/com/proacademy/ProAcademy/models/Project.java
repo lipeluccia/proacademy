@@ -16,6 +16,9 @@ import jakarta.validation.constraints.Size;
 public class Project {
     public static final String TABLE_NAME = "project";
 
+    public interface CreateProject {}
+    public interface UpdateProject {}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, updatable = false)
@@ -23,11 +26,11 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    @NotNull
+    @NotNull (groups = CreateProject.class)
     private User user;
 
     @Column(name = "title", length = 60, nullable = false)
-    @NotNull
+    @NotNull (groups = CreateProject.class)
     private String title;
 
     @Column(name = "description", length = 255)
@@ -35,11 +38,11 @@ public class Project {
     private String description;
 
     @Column(name = "initial_date", nullable = false)
-    @NotNull
+    @NotNull (groups = CreateProject.class)
     private LocalDate initialDate;
 
     @Column(name = "finish_date", nullable = false)
-    @NotNull
+    @NotNull (groups = CreateProject.class)
     private LocalDate finishDate;
 
     @Column(name = "status_Active", nullable = false)

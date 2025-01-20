@@ -6,10 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.models.Task;
+import com.proacademy.proacademy.models.Task.CreateTask;
 import com.proacademy.proacademy.repositories.TaskRepository;
+
+import jakarta.validation.Valid;
 
 @Service // Declara que esta classe é um serviço do Spring, permitindo sua injeção e gerenciamento pelo framework.
 public class TaskService {
@@ -20,12 +24,6 @@ public class TaskService {
     @Autowired // Injeta automaticamente a dependência do serviço ProjectService para operações relacionadas a projetos.
     private ProjectService projectService;
 
-    /**
-     * Busca uma tarefa pelo ID.
-     * @param id ID da tarefa a ser buscada.
-     * @return Retorna o objeto Task encontrado.
-     * @throws RuntimeException Caso a tarefa não seja encontrada.
-     */
     public Task findById(Long id) {
         Optional<Task> task = this.taskRepository.findById(id); // Busca a tarefa no repositório.
         return task.orElseThrow(() -> new RuntimeException(
@@ -38,14 +36,8 @@ public class TaskService {
         return tasks;
     }
 
-    /**
-     * Cria uma nova tarefa e associa a um projeto existente.
-     * @param obj Objeto Task contendo as informações da nova tarefa.
-     * @return Retorna a tarefa salva no banco de dados.
-     * A anotação @Transactional garante que a operação será atômica.
-     */
     @Transactional
-    public Task createTask(Task obj) {
+    public Task createTask(@Valid @Validated(CreateTask.class) Task obj) {
         Project project = this.projectService.findById(obj.getProject().getId()); // Busca o projeto associado à tarefa.
         obj.setId(null); // Garante que o ID será gerado automaticamente ao salvar.
         obj.setProject(project); // Associa o projeto à tarefa.
@@ -53,28 +45,21 @@ public class TaskService {
         return obj; // Retorna a tarefa persistida.
     }
 
-    /**
-     * Atualiza os dados de uma tarefa existente.
-     * @param obj Objeto Task contendo o ID e os novos dados da tarefa.
-     * @return Retorna a tarefa atualizada.
-     * A anotação @Transactional garante que a operação será realizada como uma transação.
-     */
     @Transactional
     public Task updateTask(Task obj) {
-        Task newObj = findById(obj.getId()); // Busca o projeto pelo ID.
-        newObj.setTitle(obj.getTitle() != null ? obj.getTitle() : newObj.getTitle()); // Atualiza o título do projeto.
-        newObj.setDescription(obj.getDescription() != null ? obj.getDescription() : newObj.getDescription()); // Atualiza a descrição projeto.
-        newObj.setInitialDate(obj.getInitialDate() != null ? obj.getInitialDate() : newObj.getInitialDate()); // Atualiza a data inicial do projeto.
-        newObj.setFinishDate(obj.getFinishDate() != null ? obj.getFinishDate() : newObj.getFinishDate()); //Atualiza a data final do projeto 
-        newObj.setStatusActive(obj.isStatusActive()); // Atualiza se o projeto está concluido ou não.
+        Task newObj = findById(obj.getId()); // Busca a task ID.
+        if (obj.getTitle() != null) {
+            newObj.setTitle(obj.getTitle()); // Atualiza o titulo da task.
+        }  if (obj.getDescription() != null) {
+            newObj.setDescription(obj.getDescription()); // Atualiza a descrição da task.
+        } if (obj.getInitialDate()!= null) {
+            newObj.setInitialDate(obj.getInitialDate());  // Atualiza a data inicial da task.
+        } if (obj.getFinishDate() != null) {
+            newObj.setFinishDate(obj.getFinishDate());  //Atualiza a data final da task 
+        } newObj.setStatusActive(obj.isStatusActive()); // Atualiza se a task está concluido ou não.
         return this.taskRepository.save(newObj); // Salva as alterações no banco de dados.
     }
 
-    /**
-     * Exclui uma tarefa pelo ID.
-     * @param id ID da tarefa a ser excluída.
-     * @throws RuntimeException Caso a tarefa tenha entidades relacionadas que impeçam a exclusão.
-     */
     public void deleteTask(Long id) {
         findById(id); // Verifica se a tarefa existe antes de tentar excluir.
         try {
