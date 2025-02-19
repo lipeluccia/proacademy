@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 import com.proacademy.proacademy.models.User;
 import com.proacademy.proacademy.models.User.CreateUser;
 import com.proacademy.proacademy.repositories.UserRepository;
+import com.proacademy.proacademy.services.exceptions.DataBindingViolationException;
+import com.proacademy.proacademy.services.exceptions.ObjectNotFoundException;
 
 import jakarta.validation.Valid;
 
@@ -21,7 +23,7 @@ public class UserService {
 
     public User findById(Long id){
         Optional<User> user = this.userRepository.findById(id); // Busca o usuário no repositório.
-        return user.orElseThrow(() -> new RuntimeException(
+        return user.orElseThrow(() -> new ObjectNotFoundException(
         "Usuário não encontrado! Id: " + id + ", Tipo: " + User.class.getName()
         ));  
     }
@@ -56,7 +58,7 @@ public class UserService {
             this.userRepository.deleteById(id);     // Tenta excluir o usuário pelo ID.
         } catch (Exception e) {
              // Lança exceção caso existam relacionamentos que impeçam a exclusão.
-            throw new RuntimeException("Não é possivel excluir. Existem entidades relacionadas!");
+            throw new DataBindingViolationException("Não é possivel excluir. Existem entidades relacionadas!");
         }
     }
 }

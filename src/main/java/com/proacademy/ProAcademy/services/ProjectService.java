@@ -12,6 +12,8 @@ import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.models.Project.CreateProject;
 import com.proacademy.proacademy.models.User;
 import com.proacademy.proacademy.repositories.ProjectRepository;
+import com.proacademy.proacademy.services.exceptions.DataBindingViolationException;
+import com.proacademy.proacademy.services.exceptions.ObjectNotFoundException;
 
 import jakarta.validation.Valid;
 
@@ -26,7 +28,7 @@ public class ProjectService {
 
     public Project findById(Long id) {
         Optional<Project> project = this.projectRepository.findById(id); // Busca o projeto no repositório.
-        return project.orElseThrow(() -> new RuntimeException(
+        return project.orElseThrow(() -> new ObjectNotFoundException(
         "Projeto não encontrado! Id: " + id + ", Tipo: " + Project.class.getName()
         ));
     }
@@ -66,7 +68,7 @@ public class ProjectService {
             this.projectRepository.deleteById(id); // Tenta excluir o projeto pelo ID.
         } catch (Exception e) {
             // Lança exceção caso existam relacionamentos que impeçam a exclusão.
-            throw new RuntimeException("Não é possível excluir. Existem entidades relacionadas!");
+            throw new DataBindingViolationException("Não é possível excluir. Existem entidades relacionadas!");
         }
     }
 }

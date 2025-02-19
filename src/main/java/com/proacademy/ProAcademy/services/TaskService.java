@@ -12,6 +12,8 @@ import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.models.Task;
 import com.proacademy.proacademy.models.Task.CreateTask;
 import com.proacademy.proacademy.repositories.TaskRepository;
+import com.proacademy.proacademy.services.exceptions.DataBindingViolationException;
+import com.proacademy.proacademy.services.exceptions.ObjectNotFoundException;
 
 import jakarta.validation.Valid;
 
@@ -26,7 +28,7 @@ public class TaskService {
 
     public Task findById(Long id) {
         Optional<Task> task = this.taskRepository.findById(id); // Busca a tarefa no repositório.
-        return task.orElseThrow(() -> new RuntimeException(
+        return task.orElseThrow(() -> new ObjectNotFoundException(
             "Tarefa não encontrada! Id: " + id + ", Tipo: " + Task.class.getName()
         ));
     }
@@ -61,12 +63,11 @@ public class TaskService {
     }
 
     public void deleteTask(Long id) {
-        findById(id); // Verifica se a tarefa existe antes de tentar excluir.
         try {
             this.taskRepository.deleteById(id); // Tenta excluir a tarefa pelo ID.
         } catch (Exception e) {
             // Lança exceção caso existam relacionamentos que impeçam a exclusão.
-            throw new RuntimeException("Não é possível excluir. Existem entidades relacionadas!");
+            throw new DataBindingViolationException("Não é possível excluir. Existem entidades relacionadas!");
         }
     }
 }
