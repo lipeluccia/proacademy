@@ -51,7 +51,7 @@ public class Project {
     @Column(name = "creation_date", nullable = false)
     private LocalDate creationDate;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Task> tasks = new ArrayList<>();
 
    // Construtor padrão

@@ -52,13 +52,15 @@ public class UserService {
         return this.userRepository.save(newObj);    // Salva as alterações no banco.
     }
 
-    public void deleteUser(Long id){
-        findById(id);   // Verifica se o usuário existe antes de tentar excluir.
-        try {
-            this.userRepository.deleteById(id);     // Tenta excluir o usuário pelo ID.
-        } catch (Exception e) {
-             // Lança exceção caso existam relacionamentos que impeçam a exclusão.
-            throw new DataBindingViolationException("Não é possivel excluir. Existem entidades relacionadas!");
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado"));
+    
+        if (!user.getProjects().isEmpty()) {
+            throw new DataBindingViolationException("Não é possível excluir o usuário, pois há projetos vinculados.");
         }
+    
+        userRepository.delete(user);
     }
+    
 }

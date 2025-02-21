@@ -59,7 +59,7 @@ public class User {
     @Size(groups = {CreateUser.class, UpdateUser.class}, max = 100)
     private String university;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Project> projects = new ArrayList<Project>();
 
     @Column(name = "creationDate", nullable = false, updatable = false)

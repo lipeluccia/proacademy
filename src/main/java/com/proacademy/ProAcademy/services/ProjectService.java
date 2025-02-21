@@ -63,12 +63,11 @@ public class ProjectService {
     }
     
     public void deleteProject(Long id) {
-        findById(id); // Verifica se o projeto existe antes de tentar excluir.
-        try {
-            this.projectRepository.deleteById(id); // Tenta excluir o projeto pelo ID.
-        } catch (Exception e) {
-            // Lança exceção caso existam relacionamentos que impeçam a exclusão.
-            throw new DataBindingViolationException("Não é possível excluir. Existem entidades relacionadas!");
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Projeto não encontrado"));
+        if (!project.getTasks().isEmpty()) {
+            throw new DataBindingViolationException("Não é possível excluir o projeto, pois há tarefas vinculadas.");
         }
+        projectRepository.delete(project);
     }
 }
