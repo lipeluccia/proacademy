@@ -52,7 +52,6 @@ public class UserSpringSecurity implements UserDetails {
 
     @Override
     public String getUsername() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getUsername'");
     }
 
