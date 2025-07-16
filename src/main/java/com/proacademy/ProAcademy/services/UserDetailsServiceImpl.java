@@ -1,6 +1,6 @@
 package com.proacademy.proacademy.services;
 
-import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,13 +18,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userRepository.findByUsername(username);
-        if (Objects.isNull(user)) {
-            throw new UsernameNotFoundException("Usuário não encontrado: " + username);
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        return new UserSpringSecurity(user.getId(), user.getEmail(), user.getPassword(), user.getProfiles());
+        return new UserSpringSecurity(user.get());
     }
 }
- 

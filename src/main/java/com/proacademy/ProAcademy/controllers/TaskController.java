@@ -1,29 +1,21 @@
 package com.proacademy.proacademy.controllers;
 
-import java.net.URI;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import com.proacademy.proacademy.dtos.TaskDTO;
 import com.proacademy.proacademy.models.Task;
 import com.proacademy.proacademy.services.ProjectService;
 import com.proacademy.proacademy.services.TaskService;
-
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
-@RequestMapping ("/task")
+@RequestMapping("/task")
 @Validated
 public class TaskController {
 
@@ -33,38 +25,44 @@ public class TaskController {
     @Autowired
     private ProjectService projectService;
 
+    @GetMapping
+    public ResponseEntity<List<TaskDTO>> findAll() {
+        return ResponseEntity.ok(taskService.findAll());
+    }
+
+    @PostMapping("/dto")
+    public ResponseEntity<TaskDTO> save(@Valid @RequestBody TaskDTO dto) {
+        return ResponseEntity.ok(taskService.save(dto));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Task> findById(@PathVariable Long id) {
-        Task obj = this.taskService.findById(id); 
-        return ResponseEntity.ok(obj);  
+        return ResponseEntity.ok(taskService.findById(id));
     }
 
     @GetMapping("/project/{projectId}")
-    public ResponseEntity<List<Task>> findAllByUserId(@PathVariable Long projectId){
-        this.projectService.findById(projectId);
-        List<Task> objs = this.taskService.findByAllByProjectId(projectId);
-        return ResponseEntity.ok().body(objs);
+    public ResponseEntity<List<Task>> findAllByProject(@PathVariable Long projectId){
+        projectService.findById(projectId);
+        return ResponseEntity.ok(taskService.findAllByProjectId(projectId));
     }
 
     @PostMapping
-    @Validated
     public ResponseEntity<Void> create(@Valid @RequestBody Task obj){
-        this.taskService.createTask(obj);
+        taskService.createTask(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
     @PutMapping("/{id}")
-    @Validated
     public ResponseEntity<Void> update(@Valid @RequestBody Task obj, @PathVariable Long id){
         obj.setId(id);
-        this.taskService.updateTask(obj);
+        taskService.updateTask(obj);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
-        this.taskService.deleteTask(id);
+        taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
-} 
+}

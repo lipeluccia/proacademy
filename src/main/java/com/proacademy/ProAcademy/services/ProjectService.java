@@ -2,12 +2,14 @@ package com.proacademy.proacademy.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.proacademy.proacademy.dtos.ProjectDTO;
 import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.models.Project.CreateProject;
 import com.proacademy.proacademy.models.User;
@@ -17,57 +19,76 @@ import com.proacademy.proacademy.services.exceptions.ObjectNotFoundException;
 
 import jakarta.validation.Valid;
 
-@Service // // Declara que esta classe é um serviço do Spring, permitindo sua injeção e gerenciamento pelo framework.
+@Service
 public class ProjectService {
 
-    @Autowired // Injeta automaticamente a dependência do repositório ProjectRepository.
+    @Autowired
     private ProjectRepository projectRepository;
 
-    @Autowired  // Declara a dependência do serviço UserService, usada para operações relacionadas ao usuário.
+    @Autowired
     private UserService userService;
 
     public Project findById(Long id) {
-        Optional<Project> project = this.projectRepository.findById(id); // Busca o projeto no repositório.
+        Optional<Project> project = this.projectRepository.findById(id);
         return project.orElseThrow(() -> new ObjectNotFoundException(
-        "Projeto não encontrado! Id: " + id + ", Tipo: " + Project.class.getName()
+                "Project not found! Id: " + id + ", Type: " + Project.class.getName()
         ));
     }
 
-    public List<Project> findByAllByUserId(Long userId) {
-        List<Project> projects = this.projectRepository.findByUser_Id(userId);
-        return projects;
+    public List<Project> findAllByUserId(Long userId) {
+        return this.projectRepository.findByUser_Id(userId);
     }
 
     @Transactional
     public Project createProject(@Valid @Validated(CreateProject.class) Project obj) {
-        User user = this.userService.findById(obj.getUser().getId()); // Busca o usuário associado ao projeto.
-        obj.setId(null); // Garante que o ID será gerado automaticamente ao salvar.
-        obj.setUser(user); // Associa o usuário ao projeto.
-        obj = this.projectRepository.save(obj); // Salva o projeto no banco de dados.
-        return obj; // Retorna o projeto persistido.
+        User user = this.userService.findById(obj.getUser().getId());
+        obj.setId(null);
+        obj.setUser(user);
+        return this.projectRepository.save(obj);
     }
 
     @Transactional
     public Project updateProject(Project obj) {
-        Project newObj = findById(obj.getId()); // Busca o projeto pelo ID.
+        Project updated = findById(obj.getId());
         if (obj.getTitle() != null) {
-            newObj.setTitle(obj.getTitle()); // Atualiza o título do projeto.
+            updated.setTitle(obj.getTitle());
         }  if (obj.getDescription() != null) {
-            newObj.setDescription(obj.getDescription()); // Atualiza a descrição projeto.
+            updated.setDescription(obj.getDescription());
         } if (obj.getInitialDate()!= null) {
-            newObj.setInitialDate(obj.getInitialDate());  // Atualiza a data inicial do projeto.
+            updated.setInitialDate(obj.getInitialDate());
         } if (obj.getFinishDate() != null) {
-            newObj.setFinishDate(obj.getFinishDate());  //Atualiza a data final do projeto 
-        } newObj.setStatusActive(obj.isStatusActive()); // Atualiza se o projeto está concluido ou não.
-        return this.projectRepository.save(newObj); // Salva as alterações no banco de dados.
+            updated.setFinishDate(obj.getFinishDate());
+        }
+        updated.setStatusActive(obj.isStatusActive());
+        return this.projectRepository.save(updated);
     }
-    
+
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Projeto não encontrado"));
+                .orElseThrow(() -> new ObjectNotFoundException("Project not found"));
         if (!project.getTasks().isEmpty()) {
-            throw new DataBindingViolationException("Não é possível excluir o projeto, pois há tarefas vinculadas.");
+            throw new DataBindingViolationException("Cannot delete project with related tasks.");
         }
         projectRepository.delete(project);
+    }
+
+    // Methods using DTO
+    public List<ProjectDTO> findAll() {
+        return projectRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public ProjectDTO save(ProjectDTO dto) {
+        Project p = new Project();
+        p.setTitle(dto.getName());
+        p.setDescription(dto.getDescription());
+        return toDTO(projectRepository.save(p));
+    }
+
+    private ProjectDTO toDTO(Project project) {
+        ProjectDTO dto = new ProjectDTO();
+        dto.setId(project.getId());
+        dto.setName(project.getTitle());
+        dto.setDescription(project.getDescription());
+        return dto;
     }
 }

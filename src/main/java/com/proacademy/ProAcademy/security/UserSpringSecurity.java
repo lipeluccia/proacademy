@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.proacademy.proacademy.models.enums.ProfileEnum;
-
+import com.proacademy.proacademy.models.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +29,15 @@ public class UserSpringSecurity implements UserDetails {
         this.password = password;
         this.authorities = profileEnums.stream().map(x -> new SimpleGrantedAuthority(x.getDescription())).collect(Collectors.toList());
     }
+
+public UserSpringSecurity(User user) {
+    this.id = user.getId();
+    this.email = user.getEmail();
+    this.password = user.getPassword();
+    this.authorities = user.getProfiles().stream()
+        .map(role -> new SimpleGrantedAuthority(role.name()))
+        .collect(Collectors.toList());
+}
 
     @Override
     public boolean isAccountNonExpired() {

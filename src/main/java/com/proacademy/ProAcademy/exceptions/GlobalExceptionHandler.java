@@ -145,7 +145,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> buildErrorResponse(
             Exception exception,
-            HttpStatus httpStatus,
+            HttpStatusCode httpStatus,
             WebRequest request) {
         return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
     }
@@ -153,7 +153,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> buildErrorResponse(
             Exception exception,
             String message,
-            HttpStatus httpStatus,
+            HttpStatusCode httpStatus,
             WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), message);
         if (this.printStackTrace) {

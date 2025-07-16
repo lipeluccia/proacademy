@@ -21,29 +21,29 @@ public class JWTUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         SecretKey key = getSecretKey();
         return Jwts.builder()
-                .setSubject(username)
-                .setExpiration(new java.util.Date(System.currentTimeMillis() + this.expiration))
+                .setSubject(email)
+                .setExpiration(new Date(System.currentTimeMillis() + this.expiration))
                 .signWith(key)
                 .compact();
-    }                
+    }
 
     private SecretKey getSecretKey() {
-        SecretKey key = Keys.hmacShaKeyFor(this.secret.getBytes());
-        return key;
+        return Keys.hmacShaKeyFor(this.secret.getBytes());
     }
-    public boolean isTokenValid(String token, String username) {
+
+    public boolean isTokenValid(String token, String email) {
         try {
             SecretKey key = getSecretKey();
-            String tokenUsername = Jwts.parserBuilder()
+            String tokenEmail = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
-            return tokenUsername.equals(username) && !isTokenExpired(token);
+            return tokenEmail.equals(email) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
@@ -51,16 +51,11 @@ public class JWTUtil {
 
     private boolean isTokenExpired(String token) {
         Claims claims = getClaims(token);
-        // Verifica se as claims não são nulas
         if (Objects.nonNull(claims)) {
-            String username = claims.getSubject();
             Date expirationDate = claims.getExpiration();
-            Date now = new  Date(System.currentTimeMillis());
-            if(Objects.nonNull(username) && Objects.nonNull(expirationDate) && now.before(expirationDate)) {
-                return true; 
-            }
+            return expirationDate.before(new Date());
         }
-        return false;
+        return true;
     }
 
     private Claims getClaims(String token) {
@@ -74,5 +69,10 @@ public class JWTUtil {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public String getUsernameFromToken(String token) {
+        Claims claims = getClaims(token);
+        return (claims != null) ? claims.getSubject() : null;
     }
 }

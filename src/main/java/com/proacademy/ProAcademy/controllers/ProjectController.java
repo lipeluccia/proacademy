@@ -1,29 +1,21 @@
 package com.proacademy.proacademy.controllers;
 
-import java.net.URI;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import com.proacademy.proacademy.dtos.ProjectDTO;
 import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.services.ProjectService;
 import com.proacademy.proacademy.services.UserService;
-
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
-@RequestMapping ("/project")
+@RequestMapping("/project")
 @Validated
 public class ProjectController {
 
@@ -33,38 +25,44 @@ public class ProjectController {
     @Autowired
     private UserService userService;
 
+    @GetMapping
+    public ResponseEntity<List<ProjectDTO>> findAll() {
+        return ResponseEntity.ok(projectService.findAll());
+    }
+
+    @PostMapping("/dto")
+    public ResponseEntity<ProjectDTO> save(@Valid @RequestBody ProjectDTO dto) {
+        return ResponseEntity.ok(projectService.save(dto));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Project> findById(@PathVariable Long id) {
-        Project obj = this.projectService.findById(id); 
-        return ResponseEntity.ok(obj);  
+        return ResponseEntity.ok(projectService.findById(id));
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Project>> findAllByUserId(@PathVariable Long userId){
-        this.userService.findById(userId);
-        List<Project> objs = this.projectService.findByAllByUserId(userId);
-        return ResponseEntity.ok().body(objs);
+        userService.findById(userId);
+        return ResponseEntity.ok(projectService.findAllByUserId(userId));
     }
 
     @PostMapping
-    @Validated
     public ResponseEntity<Void> create(@Valid @RequestBody Project obj){
-        this.projectService.createProject(obj);
+        projectService.createProject(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
     @PutMapping("/{id}")
-    @Validated
     public ResponseEntity<Void> update(@Valid @RequestBody Project obj, @PathVariable Long id){
         obj.setId(id);
-        this.projectService.updateProject(obj);
+        projectService.updateProject(obj);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
-        this.projectService.deleteProject(id);
+        projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }
-} 
+}
