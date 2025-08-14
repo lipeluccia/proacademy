@@ -51,16 +51,68 @@ Certifique-se de que os seguintes softwares estejam instalados:
 ## Estrutura do Projeto
 
 ```plaintext
-src
-├── main
-│   ├── java
-│   │   └── com.proacademy.proacademy
-│   │       ├── controllers      # Controladores REST
-│   │       ├── models           # Modelos de dados
-│   │       ├── repositories     # Interfaces para acesso ao banco de dados
-│   │       └── services         # Regras de negócio
-│   └── resources
-│       ├── application.properties # Configurações da aplicação
+proacademy/
+├── .github/
+│   └── workflows/
+│       └── maven.yml         # (CI/CD) - Automação para build e testes do projeto com GitHub Actions.
+│
+├── .mvn/                     # Contém o Maven Wrapper, que permite executar o projeto sem instalar o Maven.
+│
+├── src/                      # Pasta principal que contém todo o código-fonte da aplicação.
+│   ├── main/                 # Código da aplicação principal.
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── proacademy/
+│   │   │           └── proacademy/
+│   │   │               ├── ProacademyApplication.java  # Ponto de entrada da aplicação Spring Boot.
+│   │   │               │
+│   │   │               ├── config/
+│   │   │               │   └── SecurityConfig.java     # Configurações de segurança (quais rotas são públicas/privadas, etc).
+│   │   │               │
+│   │   │               ├── controller/                 # (Camada de Apresentação) - Define os endpoints da API (/auth, /user, etc).
+│   │   │               │   ├── AuthController.java
+│   │   │               │   ├── ProjectController.java
+│   │   │               │   ├── TaskController.java
+│   │   │               │   └── UserController.java
+│   │   │               │
+│   │   │               ├── dto/                        # (Data Transfer Objects) - Objetos que definem o formato dos dados enviados e recebidos pela API.
+│   │   │               │   ├── AuthDTO.java
+│   │   │               │   ├── TaskDTO.java
+│   │   │               │   └── UserDTO.java
+│   │   │               │
+│   │   │               ├── entities/                   # (Camada de Domínio/Modelo) - Classes que representam as tabelas do banco de dados.
+│   │   │               │   ├── ProjectEntity.java
+│   │   │               │   ├── TaskEntity.java
+│   │   │               │   └── UserEntity.java
+│   │   │               │
+│   │   │               ├── repository/                 # (Camada de Acesso a Dados) - Interfaces que gerenciam as operações com o banco de dados (salvar, buscar, deletar).
+│   │   │               │   ├── ProjectRepository.java
+│   │   │               │   ├── TaskRepository.java
+│   │   │               │   └── UserRepository.java
+│   │   │               │
+│   │   │               ├── security/                   # Classes relacionadas à segurança com JWT (JSON Web Tokens).
+│   │   │               │   ├── JwtAuthFilter.java      # Filtro que intercepta cada requisição para validar o token JWT.
+│   │   │               │   ├── JwtTokenProvider.java   # Classe responsável por gerar e validar os tokens.
+│   │   │               │   └── UserDetailsServiceImpl.java # Serviço que busca os detalhes do usuário para autenticação.
+│   │   │               │
+│   │   │               └── services/                   # (Camada de Serviço/Negócio) - Onde fica a lógica principal da aplicação.
+│   │   │                   ├── ProjectService.java
+│   │   │                   ├── TaskService.java
+│   │   │                   └── UserService.java
+│   │   │
+│   │   └── resources/
+│   │       ├── static/       # (Vazio) - Para arquivos estáticos como CSS, JS, imagens (mais usado em apps web).
+│   │       ├── templates/    # (Vazio) - Para templates de páginas web (mais usado em apps web).
+│   │       └── application.properties  # Arquivo principal de configuração (porta do servidor, conexão com BD, etc).
+│   │
+│   └── test/                 # Código-fonte para os testes da aplicação.
+│       └── java/
+│           └── ...
+│
+├── .ignore                # Lista de arquivos e pastas que o Git deve ignorar.
+├── mvnw                      # Script do Maven Wrapper para Linux/Mac.
+├── mvnw.cmd                  # Script do Maven Wrapper para Windows.
+└── pom.xml                   # Arquivo de configuração do Maven (dependências, plugins, etc).
 ```
 
 ## Contribuições
