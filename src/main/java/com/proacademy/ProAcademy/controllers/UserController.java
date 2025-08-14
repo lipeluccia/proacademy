@@ -4,14 +4,15 @@ import com.proacademy.proacademy.dtos.UserDTO;
 import com.proacademy.proacademy.models.User;
 import com.proacademy.proacademy.models.User.CreateUser;
 import com.proacademy.proacademy.models.User.UpdateUser;
+import com.proacademy.proacademy.security.UserSpringSecurity;
 import com.proacademy.proacademy.services.UserService;
+import com.proacademy.proacademy.repositories.UserRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.net.URI;
 import java.util.List;
 
@@ -20,8 +21,14 @@ import java.util.List;
 @Validated
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserRepository userRepository;
+
+    public UserController(UserService userService,
+                          UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> findAll() {
@@ -42,7 +49,8 @@ public class UserController {
     @Validated(CreateUser.class)
     public ResponseEntity<Void> create(@Valid @RequestBody User obj){
         userService.createUser(obj);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
@@ -58,5 +66,16 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal UserSpringSecurity userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return userRepository.findByEmail(userDetails.getEmail())
+                .map(UserDTO::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

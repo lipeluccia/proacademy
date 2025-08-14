@@ -7,24 +7,27 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.lang.NonNull;
 
+import com.proacademy.proacademy.services.UserService;
+
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
+    private final UserService userService;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public JWTAuthenticationFilter(JWTUtil jwtUtil, @Lazy UserService userService) {
+        this.jwtUtil = jwtUtil;
+        this.userService = userService;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -39,7 +42,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String email = jwtUtil.getUsernameFromToken(token);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UserDetails userDetails = userService.loadUserByUsername(email);
 
                 if (jwtUtil.isTokenValid(token, email)) {
                     UsernamePasswordAuthenticationToken authentication =

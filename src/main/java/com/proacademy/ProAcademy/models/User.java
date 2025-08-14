@@ -71,20 +71,28 @@ public class User {
     private String university;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<Project> projects = new ArrayList<Project>();
+    private List<Project> projects = new ArrayList<>();
 
     @Column(name = "creationDate", nullable = false, updatable = false)
     @NotNull
     private LocalDate creationDate = LocalDate.now();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @CollectionTable(name = "user_profile")
+    @CollectionTable(name = "user_profile", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "profile", nullable = false)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private Set<Integer> profiles = new HashSet<>();
 
     public Set<ProfileEnum> getProfiles() {
-        return profiles.stream().map(x -> ProfileEnum.toEnum(x)).collect(Collectors.toSet());
+        return profiles.stream()
+                .map(ProfileEnum::toEnum)
+                .collect(Collectors.toSet());
+    }
+
+    public void setProfiles(Set<ProfileEnum> profiles) {
+        this.profiles = profiles.stream()
+                .map(ProfileEnum::getCode)
+                .collect(Collectors.toSet());
     }
 
     public void addProfile(ProfileEnum profile) {

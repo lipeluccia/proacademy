@@ -5,7 +5,6 @@ import com.proacademy.proacademy.models.Project;
 import com.proacademy.proacademy.services.ProjectService;
 import com.proacademy.proacademy.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +18,17 @@ import java.util.List;
 @Validated
 public class ProjectController {
 
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public ProjectController(ProjectService projectService, UserService userService) {
+        this.projectService = projectService;
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ProjectDTO>> findAll() {
-        return ResponseEntity.ok(projectService.findAll());
+        return ResponseEntity.ok(projectService.findAllDTO());
     }
 
     @PostMapping("/dto")
@@ -36,20 +37,21 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Project> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(projectService.findById(id));
+    public ResponseEntity<ProjectDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(projectService.findDTOById(id));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Project>> findAllByUserId(@PathVariable Long userId){
+    public ResponseEntity<List<ProjectDTO>> findAllByUserId(@PathVariable Long userId){
         userService.findById(userId);
-        return ResponseEntity.ok(projectService.findAllByUserId(userId));
+        return ResponseEntity.ok(projectService.findAllDTOByUserId(userId));
     }
 
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody Project obj){
         projectService.createProject(obj);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
